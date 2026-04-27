@@ -34,6 +34,18 @@ const brandsRouter = require('./routes/brands');
 const { router: bannersRouter } = require('./routes/banners');
 const loginUrlsRouter = require('./routes/login-urls');
 
+// Login endpoint (public)
+app.post('/auth/login', (req, res) => {
+  const { password } = req.body;
+  if (!password) {
+    return res.status(400).json({ success: false, message: 'Vui lòng nhập mật khẩu!' });
+  }
+  if (password !== process.env.ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, message: 'Sai mật khẩu!' });
+  }
+  res.json({ success: true, token: process.env.ADMIN_TOKEN });
+});
+
 // Brands phải đặt trước banners
 app.use('/api/brands', authIfWrite, brandsRouter);
 
