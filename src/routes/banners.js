@@ -99,6 +99,7 @@ router.get('/admin/all', (req, res) => {
     'SELECT * FROM brands ORDER BY sort_order ASC, created_at ASC'
   ).all().map(b => ({ ...b, is_active: b.is_active === 1 }));
 
+  const brandMap = Object.fromEntries(brands.map(b => [b.id, b]));
   const result = { brands };
 
   GROUPS.forEach(grp => {
@@ -108,7 +109,8 @@ router.get('/admin/all', (req, res) => {
     result[`banners_${grp}`] = rows.map(b => ({
       ...b,
       is_active: b.is_active === 1,
-      image_url: buildImageUrl(b.image_url)
+      click_url: (b.brand_id && brandMap[b.brand_id]?.login_url) || b.click_url,
+      image_url: buildImageUrl(b.image_url, req)
     }));
   });
 
