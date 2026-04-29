@@ -46,7 +46,7 @@ router.get('/', (req, res) => {
 // POST /api/brands — tạo brand mới
 router.post('/', (req, res) => {
   try {
-    const { id, name, login_url, register_url } = req.body;
+    const { id, name, login_url } = req.body;
 
     if (!id || !name) {
       return res.status(400).json({ success: false, message: 'id và name là bắt buộc!' });
@@ -64,8 +64,8 @@ router.post('/', (req, res) => {
     }
 
     db.prepare(
-      'INSERT INTO brands (id, name, login_url, register_url) VALUES (?, ?, ?, ?)'
-    ).run(id, name, login_url || '', register_url || '');
+      'INSERT INTO brands (id, name, login_url) VALUES (?, ?, ?)'
+    ).run(id, name, login_url || '');
 
     const brand = db.prepare('SELECT * FROM brands WHERE id = ?').get(id);
     res.json({ success: true, data: { ...brand, is_active: brand.is_active === 1 } });
@@ -78,7 +78,7 @@ router.post('/', (req, res) => {
 router.put('/:id', (req, res) => {
   try {
     const oldId = req.params.id;
-    const { newId, name, login_url, register_url, is_active, sort_order } = req.body;
+    const { newId, name, login_url, is_active, sort_order } = req.body;
 
     const existing = db.prepare('SELECT * FROM brands WHERE id = ?').get(oldId);
     if (!existing) {
@@ -107,7 +107,6 @@ router.put('/:id', (req, res) => {
           id = ?,
           name = ?,
           login_url = ?,
-          register_url = ?,
           is_active = ?,
           sort_order = ?,
           updated_at = CURRENT_TIMESTAMP
@@ -116,7 +115,6 @@ router.put('/:id', (req, res) => {
         finalId,
         name ?? existing.name,
         login_url ?? existing.login_url,
-        register_url ?? existing.register_url,
         is_active !== undefined ? (is_active ? 1 : 0) : existing.is_active,
         sort_order ?? existing.sort_order,
         oldId
