@@ -15,7 +15,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Auth middleware
 const auth = (req, res, next) => {
   const token = req.headers['x-admin-token'] || req.query.token;
   if (token !== process.env.ADMIN_TOKEN) {
@@ -24,7 +23,6 @@ const auth = (req, res, next) => {
   next();
 };
 
-// Auth chỉ cho POST/PUT/DELETE
 const authIfWrite = (req, res, next) => {
   if (req.method === 'GET') return next();
   return auth(req, res, next);
@@ -34,7 +32,6 @@ const brandsRouter = require('./routes/brands');
 const { router: bannersRouter } = require('./routes/banners');
 const loginUrlsRouter = require('./routes/login-urls');
 
-// Login endpoint (public)
 app.post('/auth/login', (req, res) => {
   const { password } = req.body;
   if (!password) {
@@ -46,9 +43,7 @@ app.post('/auth/login', (req, res) => {
   res.json({ success: true, token: process.env.ADMIN_TOKEN });
 });
 
-// Brands phải đặt trước banners
 app.use('/api/brands', authIfWrite, brandsRouter);
-
 app.get('/api/banners/admin/all', auth, bannersRouter);
 app.use('/api/banners', authIfWrite, bannersRouter);
 app.use('/api/login-urls', authIfWrite, loginUrlsRouter);
@@ -57,11 +52,11 @@ app.get('/', (req, res) => {
   res.json({
     success: true,
     message: 'Ad Banner Server v4.0',
-    groups: ['slider', 'homepage', 'catfish', 'sidebar', 'popup'],
+    groups: ['homepage', 'catfish', 'sidebar'],
     endpoints: {
       all: '/api/banners/all',
       adminAll: '/api/banners/admin/all',
-      byGroup: '/api/banners?group=slider',
+      byGroup: '/api/banners?group=homepage',
       brands: '/api/brands',
       loginUrls: '/api/login-urls'
     }

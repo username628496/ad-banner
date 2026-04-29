@@ -6,7 +6,8 @@ const path = require('path');
 const fs = require('fs');
 require('dotenv').config();
 
-const GROUPS = ['slider', 'homepage', 'catfish', 'sidebar', 'popup'];
+const GROUPS = ['homepage', 'catfish', 'sidebar'];
+
 const validateId = (id) => /^[a-z0-9-]+$/.test(id);
 
 // Multer config
