@@ -38,7 +38,14 @@ const upload = multer({
   }
 });
 
-const buildImageUrl = (filename) => {
+const buildImageUrl = (filename, req) => {
+  if (!filename) return '';
+  if (req && req.headers['host']) {
+    const host = req.headers['host'];
+    // Luôn dùng https cho production domains
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    return `${protocol}://${host}/uploads/${filename}`;
+  }
   const base = process.env.BASE_URL || 'http://localhost:3000';
   return `${base}/uploads/${filename}`;
 };
