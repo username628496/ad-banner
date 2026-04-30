@@ -70,7 +70,7 @@ router.get('/', (req, res) => {
   const data = rows.map(b => ({
     ...b,
     is_active: b.is_active === 1,
-    image_url: buildImageUrl(b.image_url)
+    image_url: buildImageUrl(b.image_url, req)
   }));
 
   res.json({ success: true, data });
@@ -93,7 +93,7 @@ router.get('/all', (req, res) => {
       ...b,
       is_active: true,
       click_url: (b.brand_id && brandMap[b.brand_id]?.login_url) || b.click_url,
-      image_url: buildImageUrl(b.image_url)
+      image_url: buildImageUrl(b.image_url, req)
     }));
   });
 
